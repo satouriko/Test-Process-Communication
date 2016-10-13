@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace _2645实验室
@@ -25,27 +27,76 @@ namespace _2645实验室
             //获取窗体上OK按钮的句柄 
             IntPtr hwnd_button = FindWindowEx(mainWnd, new IntPtr(0), null, "button1");
             SendMessage(hwnd_button, WM_CLICK, mainWnd, "0");
-            //获取窗体上所有控件的句柄
-            EnumChildWindows(mainWnd, new CallBack(delegate (IntPtr hwnd, int lParam)
-            {
-                listWnd.Add(hwnd);
-                return true;
-            }), 0);
-            //foreach (IntPtr item in listWnd)
-            //{
-              
-            //    if (item != hwnd_button)
-            //    {
-            //        char[] UserChar = "luminji".ToCharArray();
-            //        foreach (char ch in UserChar)
-            //        {
-            //            SendChar(item, ch, 100);
-            //        }
-            //    }
-            //}
-
         }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //获取测试程序的窗体句柄
+            IntPtr mainWnd = FindWindow(null, "未来代码研究所");
+            List<IntPtr> listWnd = new List<IntPtr>();
+            //获取窗体上所有控件的句柄
+            EnumChildWindows(mainWnd, new CallBack(delegate (IntPtr hwnd, int _lParam)
+            {
+                listWnd.Add(hwnd);
+                StringBuilder className = new StringBuilder(126);
+                StringBuilder title = new StringBuilder(200);
+                GetWindowText(hwnd, title, 200);
+                Rect clientRect;
+                GetClientRect(hwnd, out clientRect);
+                double controlWidth = clientRect.Width;
+                double controlHeight = clientRect.Height;
+                double x = 0, y = 0;
+                IntPtr parerntHandle = GetParent(hwnd);
+                if (parerntHandle != IntPtr.Zero)
+                {
+                    GetWindowRect(hwnd, out clientRect);
+                    Rect rect;
+                    GetWindowRect(parerntHandle, out rect);
+                    x = clientRect.X - rect.X;
+                    y = clientRect.Y - rect.Y;
+                    Debug.WriteLine(x.ToString());
+                    Debug.Print(y.ToString());
+                }
+                return true;
+            }), 0);
+            int looper = 0;
+            foreach (IntPtr item in listWnd)
+            {
+                MessageBox.Show(looper.ToString() + ":" + item.ToString());
+                //if (item != hwnd_button)
+                //{
+                //    char[] UserChar = "luminji".ToCharArray();
+                //    foreach (char ch in UserChar)
+                //    {
+                //        SendChar(item, ch, 100);
+                //    }
+                //}
+                if (looper == 4)
+                {
+                    int x = 20; // X coordinate of the click 
+                    int y = 80; // Y coordinate of the click 
+                    IntPtr handle = item;
+                    //StringBuilder className = new StringBuilder(100);
+                    //while (className.ToString() != "Internet Explorer_Server") // The class control for the browser 
+                    //{
+                    //    handle = GetWindow(handle, 5); // Get a handle to the child window 
+                    //    GetClassName(handle, className, className.Capacity);
+                    //}
+
+                    IntPtr lParam = (IntPtr)((y << 16) | x); // The coordinates 
+                    IntPtr wParam = IntPtr.Zero; // Additional parameters for the click (e.g. Ctrl) 
+                    const int downCode = 0x201; // Left click down code 
+                    const int upCode = 0x202; // Left click up code 
+                    SendMessage(handle, downCode, wParam, lParam); // Mouse button down 
+                    SendMessage(handle, upCode, wParam, lParam); // Mouse button up
+                }
+                looper++;
+            }
+        }
+        [DllImport("user32")]
+        public static extern bool GetClientRect(IntPtr hwnd, out Rect lpRect);
+        [DllImport("user32")]
+        public static extern bool GetWindowRect(IntPtr hWnd, out Rect rect);
         public void SendChar(IntPtr hand, char ch, int SleepTime)
         {
             PostMessage(hand, WM_CHAR, ch, 0);
@@ -99,5 +150,6 @@ namespace _2645实验室
 
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
+
     }
 }
