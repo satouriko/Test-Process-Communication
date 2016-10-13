@@ -34,6 +34,8 @@ namespace 未来代码研究所
                     Debug.WriteLine(webBrowser1.DocumentText);
                     string str = webBrowser1.DocumentText;
                     str = str.Replace("</body></html>", "");
+                    for (int i = 0; i < 100; ++i)
+                        str += "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ac augue at erat hendrerit dictum. Praesent porta, purus eget sagittis imperdiet, nulla mi ullamcorper metus, id hendrerit metus diam vitae est. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.<br>";
                     str += "<form>你喜欢什么水果？<br>";
                     str += "<input name='fruit' type='radio' value='apple' />苹果<br/>";
                     str += "<input name='fruit' type='radio' value='orange' />橘子<br/>";

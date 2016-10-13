@@ -62,7 +62,7 @@ namespace _2645实验室
             int looper = 0;
             foreach (IntPtr item in listWnd)
             {
-                MessageBox.Show(looper.ToString() + ":" + item.ToString());
+                //MessageBox.Show(looper.ToString() + ":" + item.ToString());
                 //if (item != hwnd_button)
                 //{
                 //    char[] UserChar = "luminji".ToCharArray();
@@ -74,7 +74,7 @@ namespace _2645实验室
                 if (looper == 4)
                 {
                     int x = 20; // X coordinate of the click 
-                    int y = 80; // Y coordinate of the click 
+                    int y = 250; // Y coordinate of the click 
                     IntPtr handle = item;
                     //StringBuilder className = new StringBuilder(100);
                     //while (className.ToString() != "Internet Explorer_Server") // The class control for the browser 
