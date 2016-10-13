@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FD0E27FD-1D00-4249-A8C5-D00E1B185C0E}</ProjectGuid>
+    <ProjectGuid>{25B2C631-171C-4C5C-8DDD-8A40883D5B5C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>未来代码研究所</RootNamespace>
-    <AssemblyName>未来代码研究所</AssemblyName>
+    <RootNamespace>_2645实验室</RootNamespace>
+    <AssemblyName>2645实验室</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
