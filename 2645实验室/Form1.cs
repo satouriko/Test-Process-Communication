@@ -242,26 +242,26 @@ namespace _2645实验室
                 foreach(int i in verLines)
                 {
                     int statistics = 0;
-                    for(int k = 1; k <= 10; ++k)
+                    for(int k = 1; k <= 4; ++k)
                     {
                         //上面没有线 下面有线
                         if (j - k >= 0 && baseRes.GetPixel(i, j - k).R > 127 
                             && j + k < baseRes.Height && baseRes.GetPixel(i, j + k).R < 127)
                             ++statistics;
                     }
-                    if (statistics > 5)
+                    if (statistics > 2)
                         strangePoints.Add(new System.Drawing.Point(i, j));
                 }
             }
 
             //裁剪
-            for(int i = 0; i < strangePoints.Count; i += 3)
+            for(int i = 0; i + 2 < strangePoints.Count; i += 3)
             {
-                if(strangePoints[i+1].Y == strangePoints[i+2].Y)
+                if(strangePoints[i+1].Y == strangePoints[i+2].Y && strangePoints[i+1].Y - strangePoints[i].Y > 1)
                 {
-                    Rectangle rect = new Rectangle(strangePoints[i].X, strangePoints[i].Y,
-                        verLines.Max() - strangePoints[i].X,
-                        strangePoints[i + 1].Y - strangePoints[i].Y);
+                    Rectangle rect = new Rectangle(strangePoints[i].X + 1, strangePoints[i].Y + 1,
+                        verLines.Max() - strangePoints[i].X - 1,
+                        strangePoints[i + 1].Y - strangePoints[i].Y - 1);
                     Bitmap bmpCrop = baseRes.Clone(rect, baseRes.PixelFormat);
                     bmpCrop.Save((i / 3).ToString() + ".png");
                 }
