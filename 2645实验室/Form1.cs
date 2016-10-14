@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -151,5 +152,48 @@ namespace _2645实验室
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
 
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Image baseImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+            Graphics g = Graphics.FromImage(baseImage);
+            g.CopyFromScreen(new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), Screen.AllScreens[0].Bounds.Size);
+            g.Dispose();
+
+            Bitmap baseRes = new Bitmap(baseImage);
+
+            int[] baseVertical = new int[baseRes.Width];
+
+            for (int i = 0; i < baseRes.Width; i++)
+            {
+                baseVertical[i] = 0;
+                for (int j = 0; j < baseRes.Height; j++)
+                {
+                    //获取该点的像素的RGB的颜色
+                    Color color = baseRes.GetPixel(i, j);
+                    int value = color.R;
+                    Color newColor = value < 127 ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255,
+255, 255);
+                    if (newColor.R < 127)
+                        baseVertical[i] += 1;
+                    baseRes.SetPixel(i, j, newColor);
+                }
+            }
+
+            Bitmap baseVerMap = new Bitmap(baseRes.Width, baseRes.Height);
+            for (int i = 0; i < baseRes.Width; i++)
+            {
+                for (int j = 0; j < baseRes.Height; j++)
+                {
+                    Color newColor = j > baseRes.Height - baseVertical[i] ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255,
+255, 255);
+                    baseVerMap.SetPixel(i, j, newColor);
+                }
+            }
+
+
+            baseRes.Save("baseImage.png", ImageFormat.Png);
+            baseVerMap.Save("baseVerMap.png", ImageFormat.Png);
+            //baseImage.Save("baseImage.png", ImageFormat.Png);
+        }
     }
 }
