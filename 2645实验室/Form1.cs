@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using Matching;
 
 namespace _2645实验室
 {
@@ -270,6 +271,7 @@ namespace _2645实验室
                     i += 1;
             }
 
+            //调试输出verMap
             Bitmap baseVerMap = new Bitmap(baseRes.Width, baseRes.Height);
             for (int i = 0; i < baseRes.Width; i++)
             {
@@ -280,6 +282,20 @@ namespace _2645实验室
                     baseVerMap.SetPixel(i, j, newColor);
                 }
             }
+
+            int[] baseVertical_new = EasySimMatch.reSample(baseVertical.ToList(), 512).ToArray();
+
+            Bitmap baseVerMap_new = new Bitmap(baseVertical_new.Count(), baseRes.Height);
+            for (int i = 0; i < baseVertical_new.Count(); i++)
+            {
+                for (int j = 0; j < baseRes.Height; j++)
+                {
+                    Color newColor = j > baseRes.Height - baseVertical_new[i] ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255,
+255, 255);
+                    baseVerMap_new.SetPixel(i, j, newColor);
+                }
+            }
+            baseVerMap_new.Save("baseVerMap_new.png", ImageFormat.Png);
 
             //调试输出BaseMap
             string horLineStr = "", verLineStr = "", strangePointStr = "";
