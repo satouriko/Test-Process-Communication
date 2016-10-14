@@ -182,7 +182,7 @@ namespace _2645实验室
                     //获取该点的像素的RGB的颜色
                     Color color = baseRes.GetPixel(i, j);
                     const int limit = 200;
-                    Color newColor = (color.R < limit/* || color.G < limit || color.B < */) ?
+                    Color newColor = (color.R < limit || color.B < limit) ?
                         Color.FromArgb(0, 0, 0) : Color.FromArgb(255,255, 255);
                     if (newColor.R == 0)
                         baseVertical[i] += 1;
@@ -202,10 +202,10 @@ namespace _2645实验室
                 {
                     //获取该点的像素的RGB的颜色
                     Color color = baseRes.GetPixel(i, j);
-                    int value = color.R;
-                    Color newColor = value < 127 ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255,
-255, 255);
-                    if (newColor.R < 127)
+                    const int limit = 200;
+                    Color newColor = (color.R < limit || color.B < limit) ?
+                        Color.FromArgb(0, 0, 0) : Color.FromArgb(255, 255, 255);
+                    if (newColor.R == 0)
                         baseHorizontal[j] += 1;
                     baseRes.SetPixel(i, j, newColor);
                 }
