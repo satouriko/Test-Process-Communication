@@ -224,6 +224,7 @@ namespace _2645实验室
                 temp = i;
             }
             horLines.Add(temp);
+            horLines.Remove(0);
             temp = 0;
             foreach (int i in verLines_raw)
             {
@@ -232,9 +233,42 @@ namespace _2645实验室
                 temp = i;
             }
             verLines.Add(temp);
+            verLines.Remove(0);
+
+            //寻找奇异顶点
+            List<System.Drawing.Point> strangePoints = new List<System.Drawing.Point>();
+            foreach(int j in horLines)
+            {
+                foreach(int i in verLines)
+                {
+                    int statistics = 0;
+                    for(int k = 1; k <= 10; ++k)
+                    {
+                        //上面没有线 下面有线
+                        if (j - k >= 0 && baseRes.GetPixel(i, j - k).R > 127 
+                            && j + k < baseRes.Height && baseRes.GetPixel(i, j + k).R < 127)
+                            ++statistics;
+                    }
+                    if (statistics > 5)
+                        strangePoints.Add(new System.Drawing.Point(i, j));
+                }
+            }
+
+            //裁剪
+            for(int i = 0; i < strangePoints.Count; i += 3)
+            {
+                if(strangePoints[i+1].Y == strangePoints[i+2].Y)
+                {
+                    Rectangle rect = new Rectangle(strangePoints[i].X, strangePoints[i].Y,
+                        verLines.Max() - strangePoints[i].X,
+                        strangePoints[i + 1].Y - strangePoints[i].Y);
+                    Bitmap bmpCrop = baseRes.Clone(rect, baseRes.PixelFormat);
+                    bmpCrop.Save((i / 3).ToString() + ".png");
+                }
+            }
             
             //调试输出BaseMap
-            string horLineStr = "", verLineStr = "";
+            string horLineStr = "", verLineStr = "", strangePointStr = "";
             
             Bitmap baseMap = new Bitmap(baseRes.Width, baseRes.Height);
             foreach(int j in horLines)
@@ -255,9 +289,16 @@ namespace _2645实验室
                 }
                 verLineStr += i.ToString() + ", ";
             }
+            foreach (System.Drawing.Point pt in strangePoints)
+            {
+                Color newColor = Color.FromArgb(255, 0, 0);
+                baseMap.SetPixel(pt.X, pt.Y, newColor);
+                strangePointStr += "(" + pt.X.ToString() + ", " + pt.Y.ToString() + "), ";
+            }
 
             MessageBox.Show(horLineStr, "HorLines");
             MessageBox.Show(verLineStr, "VerLines");
+            MessageBox.Show(strangePointStr, "strangePoints");
 
             baseRes.Save("baseImage.png", ImageFormat.Png);
             baseMap.Save("baseMap.png", ImageFormat.Png);
