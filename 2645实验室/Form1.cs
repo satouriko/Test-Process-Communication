@@ -175,7 +175,7 @@ namespace _2645实验室
             //获取铅垂线
             for (int i = 0; i < baseRes.Width; i++)
             {
-                if (baseVertical[i] > baseRes.Height / 4)
+                if (baseVertical[i] > baseRes.Height / 2)
                     verLines_raw.Add(i);
             }
 
@@ -240,6 +240,10 @@ namespace _2645实验室
                     Bitmap bmpCrop = baseRes.Clone(rect, baseRes.PixelFormat);
                     bmpCrop.Save((i / 3).ToString() + ".png");
                     i += 3;
+                    //SimilarityTest
+                    Bitmap testImage = new Bitmap(Image.FromFile("test.jpg"));
+                    double sim = ImageAnalysis.getVerticalSimilarity(bmpCrop, testImage);
+                    MessageBox.Show(sim.ToString());
                 }
                 else
                     i += 1;
