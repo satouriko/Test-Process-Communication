@@ -163,9 +163,10 @@ namespace _2645实验室
 
             int[] baseVertical = new int[baseRes.Width];
             int[] baseHorizontal = new int[baseRes.Height];
-            List<int> verLines = new List<int>();
-            List<int> horLines = new List<int>();
+            HashSet<int> verLines_raw = new HashSet<int>();
+            HashSet<int> horLines_raw = new HashSet<int>();
 
+            //获取垂直方向直方图
             for (int i = 0; i < baseRes.Width; i++)
             {
                 baseVertical[i] = 0;
@@ -181,11 +182,12 @@ namespace _2645实验室
                     baseRes.SetPixel(i, j, newColor);
                 }
                 if (baseVertical[i] > baseRes.Height / 2)
-                    verLines.Add(i);
+                    verLines_raw.Add(i);
             }
 
-            int tableWidth = verLines.Max() - verLines.Min();
+            int tableWidth = verLines_raw.Max() - verLines_raw.Min();
 
+            //获取水平方向直方图
             for (int j = 0; j < baseRes.Height; j++)
             {
                 baseHorizontal[j] = 0;
@@ -201,11 +203,32 @@ namespace _2645实验室
                     baseRes.SetPixel(i, j, newColor);
                 }
                 if (baseHorizontal[j] > tableWidth / 2)
-                    horLines.Add(j);
+                    horLines_raw.Add(j);
             }
 
+            //合并连续区段
+            HashSet<int> verLines = new HashSet<int>();
+            HashSet<int> horLines = new HashSet<int>();
+            int temp = 0;
+            foreach(int i in horLines_raw)
+            {
+                if (i - temp != 1)
+                    horLines.Add(temp);
+                temp = i;
+            }
+            horLines.Add(temp);
+            temp = 0;
+            foreach (int i in verLines_raw)
+            {
+                if (i - temp != 1)
+                    verLines.Add(temp);
+                temp = i;
+            }
+            verLines.Add(temp);
+            
+            //调试输出BaseMap
             string horLineStr = "", verLineStr = "";
-
+            
             Bitmap baseMap = new Bitmap(baseRes.Width, baseRes.Height);
             foreach(int j in horLines)
             {
