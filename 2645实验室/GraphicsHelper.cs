@@ -129,6 +129,15 @@ namespace GraphicsHelper
                 return null;
             }
         }
+        public static double getVerticalSimilarity(int[] a, int[] b)
+        {
+            if (a.Length != b.Length)
+                throw new Exception("The length of two vectors are not the same!");
+            long sum = 0;
+            for(int i = 0; i < a.Length - 1; ++i)
+                sum += (a[i] - b[i]) * (a[i] - b[i]);
+            return Math.Sqrt(sum);
+        } 
 
     }
 }
