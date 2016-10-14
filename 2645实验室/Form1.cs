@@ -162,6 +162,9 @@ namespace _2645实验室
             Bitmap baseRes = new Bitmap(baseImage);
 
             int[] baseVertical = new int[baseRes.Width];
+            int[] baseHorizontal = new int[baseRes.Height];
+            List<int> verLines = new List<int>();
+            List<int> horLines = new List<int>();
 
             for (int i = 0; i < baseRes.Width; i++)
             {
@@ -177,22 +180,57 @@ namespace _2645实验室
                         baseVertical[i] += 1;
                     baseRes.SetPixel(i, j, newColor);
                 }
+                if (baseVertical[i] > baseRes.Height / 2)
+                    verLines.Add(i);
             }
 
-            Bitmap baseVerMap = new Bitmap(baseRes.Width, baseRes.Height);
-            for (int i = 0; i < baseRes.Width; i++)
+            int tableWidth = verLines.Max() - verLines.Min();
+
+            for (int j = 0; j < baseRes.Height; j++)
             {
-                for (int j = 0; j < baseRes.Height; j++)
+                baseHorizontal[j] = 0;
+                for (int i = 0; i < baseRes.Width; i++)
                 {
-                    Color newColor = j > baseRes.Height - baseVertical[i] ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255,
+                    //获取该点的像素的RGB的颜色
+                    Color color = baseRes.GetPixel(i, j);
+                    int value = color.R;
+                    Color newColor = value < 127 ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255,
 255, 255);
-                    baseVerMap.SetPixel(i, j, newColor);
+                    if (newColor.R < 127)
+                        baseHorizontal[j] += 1;
+                    baseRes.SetPixel(i, j, newColor);
                 }
+                if (baseHorizontal[j] > tableWidth / 2)
+                    horLines.Add(j);
             }
 
+            string horLineStr = "", verLineStr = "";
+
+            Bitmap baseMap = new Bitmap(baseRes.Width, baseRes.Height);
+            foreach(int j in horLines)
+            {
+                for(int i = 0; i < baseRes.Width; ++i)
+                {
+                    Color newColor = Color.FromArgb(255, 255, 255);
+                    baseMap.SetPixel(i, j, newColor);
+                }
+                horLineStr += j.ToString() + ", ";
+            }
+            foreach (int i in verLines)
+            {
+                for (int j = 0; j < baseRes.Height; ++j)
+                {
+                    Color newColor = Color.FromArgb(255, 255, 255);
+                    baseMap.SetPixel(i, j, newColor);
+                }
+                verLineStr += i.ToString() + ", ";
+            }
+
+            MessageBox.Show(horLineStr, "HorLines");
+            MessageBox.Show(verLineStr, "VerLines");
 
             baseRes.Save("baseImage.png", ImageFormat.Png);
-            baseVerMap.Save("baseVerMap.png", ImageFormat.Png);
+            baseMap.Save("baseMap.png", ImageFormat.Png);
             //baseImage.Save("baseImage.png", ImageFormat.Png);
         }
     }
