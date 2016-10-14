@@ -155,15 +155,11 @@ namespace _2645实验室
 
         private void button4_Click(object sender, EventArgs e)
         {
-            float dpiX, dpiY;
-            Graphics graphics = this.CreateGraphics();
-            dpiX = graphics.DpiX / 96;
-            dpiY = graphics.DpiY / 96;
-            Image baseImage = new Bitmap((int)(Screen.PrimaryScreen.Bounds.Width * dpiX), (int)(Screen.PrimaryScreen.Bounds.Height * dpiY));
+            Image baseImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
             Graphics g = Graphics.FromImage(baseImage);
             System.Drawing.Size sz = Screen.AllScreens[0].Bounds.Size;
-            sz.Width = (int)(sz.Width * dpiX);
-            sz.Height = (int)(sz.Height * dpiY);
+            sz.Width = sz.Width;
+            sz.Height = sz.Height;
             g.CopyFromScreen(new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0),sz);
             g.Dispose();
 
