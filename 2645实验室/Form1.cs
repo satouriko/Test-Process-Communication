@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using Matching;
+using GraphicsHelper;
 
 namespace _2645实验室
 {
@@ -169,47 +169,25 @@ namespace _2645实验室
 
             Bitmap baseRes = new Bitmap(baseImage);
 
-            int[] baseVertical = new int[baseRes.Width];
-            int[] baseHorizontal = new int[baseRes.Height];
             HashSet<int> verLines_raw = new HashSet<int>();
             HashSet<int> horLines_raw = new HashSet<int>();
 
-            //获取垂直方向直方图
+            baseRes = ImageAnalysis.binaryzation(baseRes, 200);
+            int[] baseVertical = ImageAnalysis.getVerticalHistogram(baseRes);
+            int[] baseHorizontal = ImageAnalysis.getHorizontalHistogram(baseRes);
+
+            //获取铅垂线
             for (int i = 0; i < baseRes.Width; i++)
             {
-                baseVertical[i] = 0;
-                for (int j = 0; j < baseRes.Height; j++)
-                {
-                    //获取该点的像素的RGB的颜色
-                    Color color = baseRes.GetPixel(i, j);
-                    const int limit = 200;
-                    Color newColor = (color.R < limit || color.B < limit) ?
-                        Color.FromArgb(0, 0, 0) : Color.FromArgb(255,255, 255);
-                    if (newColor.R == 0)
-                        baseVertical[i] += 1;
-                    baseRes.SetPixel(i, j, newColor);
-                }
                 if (baseVertical[i] > baseRes.Height / 4)
                     verLines_raw.Add(i);
             }
 
             int tableWidth = verLines_raw.Max() - verLines_raw.Min();
 
-            //获取水平方向直方图
+            //获取水平线
             for (int j = 0; j < baseRes.Height; j++)
             {
-                baseHorizontal[j] = 0;
-                for (int i = 0; i < baseRes.Width; i++)
-                {
-                    //获取该点的像素的RGB的颜色
-                    Color color = baseRes.GetPixel(i, j);
-                    const int limit = 200;
-                    Color newColor = (color.R < limit || color.B < limit) ?
-                        Color.FromArgb(0, 0, 0) : Color.FromArgb(255, 255, 255);
-                    if (newColor.R == 0)
-                        baseHorizontal[j] += 1;
-                    baseRes.SetPixel(i, j, newColor);
-                }
                 if (baseHorizontal[j] > tableWidth / 2)
                     horLines_raw.Add(j);
             }
@@ -272,31 +250,19 @@ namespace _2645实验室
             }
 
             //调试输出verMap
-            Bitmap baseVerMap = new Bitmap(baseRes.Width, baseRes.Height);
-            for (int i = 0; i < baseRes.Width; i++)
-            {
-                for (int j = 0; j < baseRes.Height; j++)
-                {
-                    Color newColor = j > baseRes.Height - baseVertical[i] ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255,
-255, 255);
-                    baseVerMap.SetPixel(i, j, newColor);
-                }
-            }
+            Bitmap baseVerMap = ImageAnalysis.getVerticalHistogram(baseVertical, baseRes.Height);
+            baseVerMap.Save("baseVerMap.png", ImageFormat.Png);
 
-            int[] baseVertical_new = EasySimMatch.reSample(baseVertical.ToList(), 512).ToArray();
+            Bitmap baseVerMap_new = ImageAnalysis.getVerticalHistogram(
+                ImageAnalysis.getVerticalHistogram(
+                    ImageAnalysis.binaryzation(ImageAnalysis.ResizeImage(baseRes, 500, baseRes.Height), 255)
+                    ), 
+                baseRes.Height);
+            Bitmap baseVerMap_new2 = ImageAnalysis.ResizeImage(baseRes, 500, baseRes.Height);
 
-            Bitmap baseVerMap_new = new Bitmap(baseVertical_new.Count(), baseRes.Height);
-            for (int i = 0; i < baseVertical_new.Count(); i++)
-            {
-                for (int j = 0; j < baseRes.Height; j++)
-                {
-                    Color newColor = j > baseRes.Height - baseVertical_new[i] ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255,
-255, 255);
-                    baseVerMap_new.SetPixel(i, j, newColor);
-                }
-            }
+
             baseVerMap_new.Save("baseVerMap_new.png", ImageFormat.Png);
-
+            baseVerMap_new2.Save("baseVerMap_new2.png", ImageFormat.Png);
             //调试输出BaseMap
             string horLineStr = "", verLineStr = "", strangePointStr = "";
             
@@ -331,9 +297,7 @@ namespace _2645实验室
             MessageBox.Show(strangePointStr, "strangePoints");
 
             baseRes.Save("baseImage.png", ImageFormat.Png);
-            baseVerMap.Save("baseVerMap.png", ImageFormat.Png);
             baseMap.Save("baseMap.png", ImageFormat.Png);
-            //baseImage.Save("baseImage.png", ImageFormat.Png);
         }
     }
 }
