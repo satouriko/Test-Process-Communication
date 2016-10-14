@@ -188,7 +188,7 @@ namespace _2645实验室
                         baseVertical[i] += 1;
                     baseRes.SetPixel(i, j, newColor);
                 }
-                if (baseVertical[i] > baseRes.Height / 2)
+                if (baseVertical[i] > baseRes.Height / 4)
                     verLines_raw.Add(i);
             }
 
@@ -255,18 +255,32 @@ namespace _2645实验室
             }
 
             //裁剪
-            for(int i = 0; i + 2 < strangePoints.Count; i += 3)
+            for(int i = 0; i + 2 < strangePoints.Count;)
             {
-                if(strangePoints[i+1].Y == strangePoints[i+2].Y && strangePoints[i+1].Y - strangePoints[i].Y > 1)
+                if (strangePoints[i + 1].Y == strangePoints[i + 2].Y && strangePoints[i + 1].Y - strangePoints[i].Y > 1)
                 {
                     Rectangle rect = new Rectangle(strangePoints[i].X + 1, strangePoints[i].Y + 1,
                         verLines.Max() - strangePoints[i].X - 1,
                         strangePoints[i + 1].Y - strangePoints[i].Y - 1);
                     Bitmap bmpCrop = baseRes.Clone(rect, baseRes.PixelFormat);
                     bmpCrop.Save((i / 3).ToString() + ".png");
+                    i += 3;
+                }
+                else
+                    i += 1;
+            }
+
+            Bitmap baseVerMap = new Bitmap(baseRes.Width, baseRes.Height);
+            for (int i = 0; i < baseRes.Width; i++)
+            {
+                for (int j = 0; j < baseRes.Height; j++)
+                {
+                    Color newColor = j > baseRes.Height - baseVertical[i] ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255,
+255, 255);
+                    baseVerMap.SetPixel(i, j, newColor);
                 }
             }
-            
+
             //调试输出BaseMap
             string horLineStr = "", verLineStr = "", strangePointStr = "";
             
@@ -301,6 +315,7 @@ namespace _2645实验室
             MessageBox.Show(strangePointStr, "strangePoints");
 
             baseRes.Save("baseImage.png", ImageFormat.Png);
+            baseVerMap.Save("baseVerMap.png", ImageFormat.Png);
             baseMap.Save("baseMap.png", ImageFormat.Png);
             //baseImage.Save("baseImage.png", ImageFormat.Png);
         }
