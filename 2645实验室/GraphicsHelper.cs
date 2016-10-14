@@ -97,9 +97,9 @@ namespace GraphicsHelper
         static public Bitmap removeBlankVerticalLines(Bitmap baseRes, int[] verticalHistogram)
         {
             List<int> verHisList = verticalHistogram.ToList();
-            verHisList.Remove(0);
+            verHisList.RemoveAll(item => item == 0);
             Bitmap ret = new Bitmap(verHisList.Count, baseRes.Height);
-            for(int iraw = 0, i = 0; iraw < ret.Width; ++iraw)
+            for(int iraw = 0, i = 0; iraw < baseRes.Width; ++iraw)
             {
                 if(verticalHistogram[iraw] != 0)
                 {
@@ -143,19 +143,15 @@ namespace GraphicsHelper
         {
             return getVerticalSimilarity(bmp1, bmp2) < limit;
         }
-        static public double getVerticalSimilarity(Bitmap bmp1, Bitmap bmp2)
+        static public double getVerticalSimilarity(Bitmap shiyan, Bitmap duizhao)
         {
-            bmp1 = binaryzation(bmp1);
-            bmp2 = binaryzation(bmp2);
-            bmp1 = removeBlankVerticalLines(bmp1);
-            bmp2 = removeBlankVerticalLines(bmp2);
-            if (bmp1.Width < bmp2.Width)
-                bmp2 = ResizeImage(bmp2, bmp1.Width, bmp1.Height);
-            else
-                bmp1 = ResizeImage(bmp1, bmp2.Width, bmp2.Height);
-            bmp1 = binaryzation(bmp1);
-            bmp2 = binaryzation(bmp2);
-            return getVerticalSimilarity(getVerticalHistogram(bmp1), getVerticalHistogram(bmp2));
+            shiyan = binaryzation(shiyan);
+            duizhao = binaryzation(duizhao);
+            shiyan = removeBlankVerticalLines(shiyan);
+            duizhao = removeBlankVerticalLines(duizhao);
+            shiyan = ResizeImage(shiyan, duizhao.Width, shiyan.Height);
+            shiyan = binaryzation(shiyan, 255);
+            return getVerticalSimilarity(getVerticalHistogram(shiyan), getVerticalHistogram(duizhao));
         }
     }
 }

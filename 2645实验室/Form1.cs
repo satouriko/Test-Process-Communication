@@ -165,7 +165,7 @@ namespace _2645实验室
 
             Bitmap baseRes = new Bitmap(baseImage);
 
-            HashSet<int> verLines_raw = new HashSet<int>();
+            Dictionary<int, int> verLines_raw = new Dictionary<int, int>();
             HashSet<int> horLines_raw = new HashSet<int>();
 
             baseRes = ImageAnalysis.binaryzation(baseRes, 200);
@@ -175,11 +175,11 @@ namespace _2645实验室
             //获取铅垂线
             for (int i = 0; i < baseRes.Width; i++)
             {
-                if (baseVertical[i] > baseRes.Height / 2)
-                    verLines_raw.Add(i);
+                if (baseVertical[i] > baseRes.Height / 4)
+                    verLines_raw.Add(i, baseVertical[i]);
             }
 
-            int tableWidth = verLines_raw.Max() - verLines_raw.Min();
+            int tableWidth = verLines_raw.Max(item => item.Value) - verLines_raw.Min(item => item.Value);
 
             //获取水平线
             for (int j = 0; j < baseRes.Height; j++)
@@ -189,8 +189,9 @@ namespace _2645实验室
             }
 
             //合并连续区段
-            HashSet<int> verLines = new HashSet<int>();
+            Dictionary<int, int> verLines_dic = new Dictionary<int, int>();
             HashSet<int> horLines = new HashSet<int>();
+            HashSet<int> verLines = new HashSet<int>();
             int temp = 0;
             foreach(int i in horLines_raw)
             {
@@ -200,15 +201,26 @@ namespace _2645实验室
             }
             horLines.Add(temp);
             horLines.Remove(0);
-            temp = 0;
-            foreach (int i in verLines_raw)
+            KeyValuePair<int, int> kvtemp = new KeyValuePair<int, int>(0,0);
+            foreach (KeyValuePair<int, int> kv in verLines_raw)
             {
-                if (i - temp != 1)
-                    verLines.Add(temp);
-                temp = i;
+                if (kv.Key - kvtemp.Key != 1)
+                    verLines_dic.Add(kvtemp.Key, kvtemp.Value);
+                kvtemp = kv;
             }
-            verLines.Add(temp);
-            verLines.Remove(0);
+            verLines_dic.Add(kvtemp.Key, kvtemp.Value);
+            verLines_dic.Remove(0);
+
+            //铅垂线只保留六根
+            verLines_dic = verLines_dic.OrderByDescending(item => item.Value).ToDictionary(item => item.Key, item => item.Value);
+            int cnt = 0;
+            foreach(KeyValuePair<int, int> kv in verLines_dic)
+            {
+                if (cnt >= 6)
+                    break;
+                verLines.Add(kv.Key);
+                cnt++;
+            }
 
             //寻找奇异顶点
             List<System.Drawing.Point> strangePoints = new List<System.Drawing.Point>();
@@ -232,7 +244,9 @@ namespace _2645实验室
             //裁剪
             for(int i = 0; i + 2 < strangePoints.Count;)
             {
-                if (strangePoints[i + 1].Y == strangePoints[i + 2].Y && strangePoints[i + 1].Y - strangePoints[i].Y > 1)
+                if (strangePoints[i + 1].Y == strangePoints[i + 2].Y 
+                    && strangePoints[i + 1].Y - strangePoints[i].Y > 1
+                    && verLines.Max() - strangePoints[i].X - 1 > 1)
                 {
                     Rectangle rect = new Rectangle(strangePoints[i].X + 1, strangePoints[i].Y + 1,
                         verLines.Max() - strangePoints[i].X - 1,
@@ -242,6 +256,19 @@ namespace _2645实验室
                     i += 3;
                     //SimilarityTest
                     Bitmap testImage = new Bitmap(Image.FromFile("test.jpg"));
+                    //Bitmap bmp1 = bmpCrop, bmp2 = testImage;
+                    ////bmp1 = ImageAnalysis.binaryzation(bmp1);
+                    //bmp2 = ImageAnalysis.binaryzation(bmp2);
+                    //bmp1 = ImageAnalysis.removeBlankVerticalLines(bmp1);
+                    //bmp2 = ImageAnalysis.removeBlankVerticalLines(bmp2);
+                    //bmp1 = ImageAnalysis.ResizeImage(bmp1, bmp2.Width, bmp1.Height);
+                    //bmp1 = ImageAnalysis.binaryzation(bmp1, 200);
+                    //bmp1.Save("simtest" + i.ToString() + "_1.png", ImageFormat.Png);
+                    //bmp2.Save("simtest" + i.ToString() + "_2.png", ImageFormat.Png);
+                    //bmp1 = ImageAnalysis.getVerticalHistogram(ImageAnalysis.getVerticalHistogram(bmp1), bmp1.Height);
+                    //bmp2 = ImageAnalysis.getVerticalHistogram(ImageAnalysis.getVerticalHistogram(bmp2), bmp2.Height);
+
+
                     double sim = ImageAnalysis.getVerticalSimilarity(bmpCrop, testImage);
                     MessageBox.Show(sim.ToString());
                 }
