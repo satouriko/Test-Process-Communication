@@ -130,5 +130,23 @@ namespace GraphicsHelper
             }
         }
 
+        static public bool getVerticalSimilarity(Bitmap bmp1, Bitmap bmp2, double limit)
+        {
+            return getVerticalSimilarity(bmp1, bmp2) < limit;
+        }
+        static public double getVerticalSimilarity(Bitmap bmp1, Bitmap bmp2)
+        {
+            bmp1 = binaryzation(bmp1);
+            bmp2 = binaryzation(bmp2);
+            bmp1 = removeBlankVerticalLines(bmp1);
+            bmp2 = removeBlankVerticalLines(bmp2);
+            if (bmp1.Width < bmp2.Width)
+                bmp2 = ResizeImage(bmp2, bmp1.Width, bmp1.Height);
+            else
+                bmp1 = ResizeImage(bmp1, bmp2.Width, bmp2.Height);
+            bmp1 = binaryzation(bmp1);
+            bmp2 = binaryzation(bmp2);
+            return getVerticalSimilarity(getVerticalHistogram(bmp1), getVerticalHistogram(bmp2));
+        }
     }
 }
