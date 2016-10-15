@@ -168,7 +168,7 @@ namespace _2645实验室
             Dictionary<int, int> verLines_raw = new Dictionary<int, int>();
             HashSet<int> horLines_raw = new HashSet<int>();
 
-            baseRes = ImageAnalysis.binaryzation(baseRes, 127);
+            baseRes = ImageAnalysis.binaryzation(baseRes);
             int[] baseVertical = ImageAnalysis.getVerticalHistogram(baseRes);
             int[] baseHorizontal = ImageAnalysis.getHorizontalHistogram(baseRes);
 
@@ -285,7 +285,7 @@ namespace _2645实验室
 
             Bitmap baseVerMap_new = ImageAnalysis.getVerticalHistogram(
                 ImageAnalysis.getVerticalHistogram(
-                    ImageAnalysis.binaryzation(ImageAnalysis.ResizeImage(baseRes, 500, baseRes.Height), 255)
+                    ImageAnalysis.binaryzation(ImageAnalysis.ResizeImage(baseRes, 500, baseRes.Height))
                     ), 
                 baseRes.Height);
             Bitmap baseVerMap_new2 = ImageAnalysis.ResizeImage(baseRes, 500, baseRes.Height);

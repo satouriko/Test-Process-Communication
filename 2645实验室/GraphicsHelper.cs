@@ -10,8 +10,9 @@ namespace GraphicsHelper
 {
     class ImageAnalysis
     {
-        static public Bitmap binaryzation(Bitmap baseRes, int limit = 200)
+        static public Bitmap binaryzation(Bitmap baseRes)
         {
+            int limit = 200;
             for (int i = 0; i < baseRes.Width; i++)
             {
                 for (int j = 0; j < baseRes.Height; j++)
@@ -150,7 +151,7 @@ namespace GraphicsHelper
             shiyan = removeBlankVerticalLines(shiyan);
             duizhao = removeBlankVerticalLines(duizhao);
             shiyan = ResizeImage(shiyan, duizhao.Width, shiyan.Height);
-            shiyan = binaryzation(shiyan, 255);
+            shiyan = binaryzation(shiyan);
             return getVerticalSimilarity(getVerticalHistogram(shiyan), getVerticalHistogram(duizhao));
         }
     }
