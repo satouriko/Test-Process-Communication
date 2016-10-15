@@ -168,7 +168,7 @@ namespace _2645实验室
             Dictionary<int, int> verLines_raw = new Dictionary<int, int>();
             HashSet<int> horLines_raw = new HashSet<int>();
 
-            baseRes = ImageAnalysis.binaryzation(baseRes, 200);
+            baseRes = ImageAnalysis.binaryzation(baseRes, 127);
             int[] baseVertical = ImageAnalysis.getVerticalHistogram(baseRes);
             int[] baseHorizontal = ImageAnalysis.getHorizontalHistogram(baseRes);
 
@@ -179,7 +179,8 @@ namespace _2645实验室
                     verLines_raw.Add(i, baseVertical[i]);
             }
 
-            int tableWidth = verLines_raw.Max(item => item.Value) - verLines_raw.Min(item => item.Value);
+            int tableWidth = verLines_raw.Max(item => item.Key) - verLines_raw.Min(item => item.Key);
+            //MessageBox.Show(verLines_raw.Max(item => item.Value).ToString() + verLines_raw.Min(item => item.Value).ToString());
 
             //获取水平线
             for (int j = 0; j < baseRes.Height; j++)
@@ -276,7 +277,9 @@ namespace _2645实验室
                     i += 1;
             }
 
-            //调试输出verMap
+            //调试输出Hor,verMap
+            Bitmap baseHorMap = ImageAnalysis.getHorizontalHistogram(baseHorizontal, baseRes.Width);
+            baseHorMap.Save("baseHorMap.png", ImageFormat.Png);
             Bitmap baseVerMap = ImageAnalysis.getVerticalHistogram(baseVertical, baseRes.Height);
             baseVerMap.Save("baseVerMap.png", ImageFormat.Png);
 
